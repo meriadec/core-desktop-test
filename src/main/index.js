@@ -63,7 +63,10 @@ app.on("ready", () => {
   mainWindow = createMainWindow();
 });
 
-const forkPath = path.resolve(__dirname, "internal.js");
+const forkPath =
+  process.env.NODE_ENV === "production"
+    ? path.resolve(__dirname, "src/main/internal.js")
+    : path.resolve(__dirname, "internal.js");
 const internalProcess = fork(forkPath);
 
 let sender;

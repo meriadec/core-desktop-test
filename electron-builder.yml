@@ -1,0 +1,4 @@
+asar: false
+files:
+  - src/main/internal.js
+  - src/main/helpers.js
