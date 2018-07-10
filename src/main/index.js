@@ -10,6 +10,8 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
 
+const USER_DATA_PATH_YOLO = app.getPath("userData");
+
 function createMainWindow() {
   const window = new BrowserWindow();
 
@@ -67,7 +69,12 @@ const forkPath =
   process.env.NODE_ENV === "production"
     ? path.resolve(__dirname, "src/main/internal.js")
     : path.resolve(__dirname, "internal.js");
-const internalProcess = fork(forkPath);
+
+const internalProcess = fork(forkPath, {
+  env: Object.assign({}, process.env, {
+    USER_DATA_PATH_YOLO
+  })
+});
 
 let sender;
 
