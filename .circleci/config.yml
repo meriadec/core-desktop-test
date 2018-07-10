@@ -1,0 +1,20 @@
+version: 2
+
+docker_defaults: &docker_defaults
+  docker:
+    - image: circleci/node:9.5
+
+jobs:
+  build:
+    <<: *docker_defaults
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn
+      - run:
+          name: test node
+          command: node test.js
+      - run:
+          name: test electron
+          command: ./node_modules/.bin/electron test.js
