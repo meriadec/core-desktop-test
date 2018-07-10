@@ -10,6 +10,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: wtf
+          command: apt-get install -y libudev-dev
+      - run:
           name: Install Dependencies
           command: yarn
       - run:
