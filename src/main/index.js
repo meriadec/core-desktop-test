@@ -3,9 +3,9 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import { format as formatUrl } from "url";
+import { fork } from "child_process";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
-const helpers = require('./helpers')
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
@@ -63,14 +63,26 @@ app.on("ready", () => {
   mainWindow = createMainWindow();
 });
 
+const forkPath = path.resolve(__dirname, "internal.js");
+const internalProcess = fork(forkPath);
+
+let sender;
+
+internalProcess.on("message", ({ msgType, value }) => {
+  if (!sender) {
+    console.log(`no sender`);
+    return;
+  }
+  console.log(`sending ${value}`);
+  sender.send(`${msgType}-answer`, value);
+});
+
 ipcMain.on("libcore-get-version", event => {
-  helpers.libCoreGetVersion(v => {
-    event.sender.send("libcore-get-version-answer", v);
-  })
+  sender = event.sender;
+  internalProcess.send("libcore-get-version");
 });
 
 ipcMain.on("listen-device", event => {
-  helpers.listenDevices(res => {
-    event.sender.send("listen-device-answer", res);
-  })
+  sender = event.sender;
+  internalProcess.send("listen-device");
 });
