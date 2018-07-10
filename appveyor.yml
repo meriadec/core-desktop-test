@@ -1,6 +1,5 @@
 version: 1.0.{build}
-image:
-- Visual Studio 2015
+
 environment:
   nodejs_version: "8.11.3"
 
