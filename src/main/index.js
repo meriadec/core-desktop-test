@@ -4,10 +4,8 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import { format as formatUrl } from "url";
 
-const CommNodeHid = require("@ledgerhq/hw-transport-node-hid").default;
-const lib = require("@ledgerhq/ledger-core");
-
 const isDevelopment = process.env.NODE_ENV !== "production";
+const helpers = require('./helpers')
 
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
@@ -66,30 +64,13 @@ app.on("ready", () => {
 });
 
 ipcMain.on("libcore-get-version", event => {
-  setTimeout(() => {
-    const core = new lib.NJSLedgerCore();
-    const stringVersion = core.getStringVersion();
-    event.sender.send("libcore-get-version-answer", stringVersion);
-  }, 1 * 1000);
+  helpers.libCoreGetVersion(v => {
+    event.sender.send("libcore-get-version-answer", v);
+  })
 });
 
 ipcMain.on("listen-device", event => {
-  try {
-    const DURATION = 1 * 1000;
-
-    CommNodeHid.listen({
-      next: () => {},
-      complete: () => {},
-      error: err => {
-        console.log(err);
-        process.exit(1);
-      }
-    });
-
-    setTimeout(() => {
-      event.sender.send("listen-device-answer", "ok");
-    }, 1 * 1000);
-  } catch (err) {
-    event.sender.send("listen-device-answer", err.stack);
-  }
+  helpers.listenDevices(res => {
+    event.sender.send("listen-device-answer", res);
+  })
 });
