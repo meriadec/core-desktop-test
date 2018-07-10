@@ -10,9 +10,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: wtf
-          command: sudo apt-get install -y libudev-dev libusb-1.0-0
-      - run:
           name: Install Dependencies
           command: yarn
       - run:
